@@ -136,7 +136,9 @@ def print_tbl(
         max_width=config.MAX_WIDTH,
     )
     # MESSAGE
-    table.add_column(ratio=config.RATIO_MAIN, overflow="fold", style=f"{level.name.lower()}_msg")
+    table.add_column(
+        ratio=config.RATIO_MAIN, overflow="fold", style=f"{level.name.lower()}_msg"
+    )
     # FILE
     table.add_column(justify="right", ratio=config.RATIO_FROM, overflow="fold")
     # LINE
@@ -144,7 +146,9 @@ def print_tbl(
     record_time = ""
     if config.LOGURU_DATETIME_SHOW:
         time_ = datetime.datetime.now()
-        record_time = f"\n[#00FA9A r not b] {time_.strftime(config.LOGURU_DATETIME_FORMAT)} [/]"
+        record_time = (
+            f"\n[#00FA9A r not b] {time_.strftime(config.LOGURU_DATETIME_FORMAT)} [/]"
+        )
     table.add_row(
         f"[{theme_fmt.get(style)}] {level:<9}[/]{record_time}",
         f"{message}",

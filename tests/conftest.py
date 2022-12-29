@@ -6,6 +6,7 @@ from _pytest.main import Session
 from _pytest.nodes import Item
 
 from rich.console import Console
+
 console = Console()
 
 
