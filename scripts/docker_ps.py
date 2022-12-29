@@ -12,7 +12,8 @@ def dps(dps_list: Union[str, RunningCommand]=None, column_delimiter:str = "~~~")
     if type(dps_list) is RunningCommand:
         dps_ = list(dps_list)
     elif type(dps_list) is str:
-        dps_ = dps_list.split("\n")
+        # dps_ = dps_list.split("\n")
+        dps_ = (dps_list.split("\n"))[:-1]
     else:
         dps_ = sh.bash(
             "-c",
@@ -32,22 +33,21 @@ def dps(dps_list: Union[str, RunningCommand]=None, column_delimiter:str = "~~~")
         box=None,
     )
 
-    table.add_column("Names", justify="center", style="cyan", no_wrap=True)
-    table.add_column("Status", justify="center", style="magenta")
-    table.add_column("Networks", justify="left", style="green")
-    table.add_column("Ports", justify="center", style="yellow")
+    table.add_column("Names", justify="left", style="red")
+    table.add_column("Status", justify="left", style="green")
+    table.add_column("Networks", justify="left", style="magenta")
+    table.add_column("Ports", justify="left", style="yellow")
 
     for key, val in enumerate(dps_):
         cells = val.split(column_delimiter)
-        if key == 0:
-            ...
-        else:
+        if key != 0:
             table.add_row(
+                # сначала все клетки кроме последней
                 *cells[:-1],
-                cells[-1][:-1],
-                style=(lambda key: "on black" if key % 2 else "on #18181C")(key)
+                # последняя клетка может содержать или не содержать символ новой строки
+                (lambda cell: cells[-1][:-1] if cells[-1][-1:] == '\n' else cells[-1])(cells),
+                style=(lambda key_: "on #18181C" if key_ % 2 else "on black")(key)
             )
-        #     print("-" * 50)
     console = Console()
     console.print(table)
     # console.print(table, end="\t")
