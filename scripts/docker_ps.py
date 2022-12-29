@@ -10,21 +10,23 @@ from rich.style import Style
 def dps(dps_list: Union[str, RunningCommand]=None, column_delimiter:str = "~~~") -> None:
     """docker ps"""
 
-    if type(dps_list) is RunningCommand:
-        dps_ = list(dps_list)
-    elif type(dps_list) is str:
+    if type(dps_list) is str:
         # удаляем последний перенос
         dps_ = (dps_list.split("\n"))[:-1]
-        first_row = dps_[:1]
-        # сортируем по первой колонке
-        dps_2 = dps_[1:]
-        dps_2.sort()
-        dps_ = first_row + dps_2
     else:
         dps_ = sh.bash(
             "-c",
             f"docker ps --format 'table {{{{.Names}}}}{column_delimiter}{{{{.Status}}}}{column_delimiter}{{{{.Networks}}}}{column_delimiter}{{{{.Ports}}}}'",
         )
+        dps_ = list(dps_)
+
+    # сортируем, сохраняем первую строку - заголовок
+    first_row = dps_[:1]
+    # сортируем по первой колонке
+    dps_2 = dps_[1:]
+    dps_2.sort()
+    # собираем снова список
+    dps_ = first_row + dps_2
 
     table_header_style = Style(color="#3385BF", bold=False)
 
@@ -38,8 +40,8 @@ def dps(dps_list: Union[str, RunningCommand]=None, column_delimiter:str = "~~~")
     )
 
     table.add_column("Names", justify="left", style="red", max_width=20)
-    table.add_column("Status", justify="left", style="green", max_width=20)
-    table.add_column("Networks", justify="left", style="magenta", max_width=20)
+    table.add_column("Status", justify="left", style="green", max_width=27)
+    table.add_column("Networks", justify="left", style="magenta", max_width=23)
     table.add_column("Ports", justify="left", style="yellow")
 
     for key, val in enumerate(dps_):
@@ -56,7 +58,6 @@ def dps(dps_list: Union[str, RunningCommand]=None, column_delimiter:str = "~~~")
             )
     console = Console()
     console.print(table)
-    # console.print(table, end="\t")
 
 
 if __name__ == '__main__':
