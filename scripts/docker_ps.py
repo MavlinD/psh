@@ -1,13 +1,10 @@
-from typing import Union
-
 import sh
-from sh import RunningCommand
 from rich.console import Console
 from rich.table import Table
 from rich.style import Style
 
 
-def dps(dps_list: Union[str, RunningCommand]=None, column_delimiter:str = "~~~") -> None:
+def dps(dps_list: str=None, column_delimiter:str = "~~~") -> None:
     """docker ps"""
 
     if type(dps_list) is str:
