@@ -13,8 +13,13 @@ def dps(dps_list: Union[str, RunningCommand]=None, column_delimiter:str = "~~~")
     if type(dps_list) is RunningCommand:
         dps_ = list(dps_list)
     elif type(dps_list) is str:
-        # dps_ = dps_list.split("\n")
+        # удаляем последний перенос
         dps_ = (dps_list.split("\n"))[:-1]
+        first_row = dps_[:1]
+        # сортируем по первой колонке
+        dps_2 = dps_[1:]
+        dps_2.sort()
+        dps_ = first_row + dps_2
     else:
         dps_ = sh.bash(
             "-c",
