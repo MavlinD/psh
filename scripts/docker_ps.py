@@ -52,3 +52,7 @@ def dps(dps_list: Union[str, RunningCommand]=None, column_delimiter:str = "~~~")
     console = Console()
     console.print(table)
     # console.print(table, end="\t")
+
+
+if __name__ == '__main__':
+    dps()
