@@ -1,5 +1,5 @@
 NAMES~~~STATUS~~~NETWORKS~~~PORTS
 auth-api-v2~~~Up 14 seconds~~~auth~~~0.0.0.0:9357->6464/tcp, :::9357->6464/tcp, 0.0.0.0:12346->8080/tcp, :::12346->8080/tcp
 auth-db-v2~~~Up 46 seconds~~~auth~~~127.0.0.1:5432->5432/tcp
-auth-db-neo~~~Up 46 minutes~~~auth, mbank~~~127.0.0.1:5432->5432/tcp
+auth-db-neo~~~Up 46 minutes~~~auth,mbank,popup,foo,bar,omega,alfa,baz,mare,fobos~~~127.0.0.1:5432->5432/tcp
 auth-api-neo~~~Up 14 minutes~~~auth, mbank~~~0.0.0.0:9357->6464/tcp, :::9357->6464/tcp, 0.0.0.0:12346->8080/tcp, :::12346->8080/tcp

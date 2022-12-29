@@ -1,5 +1,6 @@
 import pytest
 from loguru import logger
+from rich import print
 
 from scripts.docker_ps import dps
 
@@ -12,7 +13,7 @@ reason = "Temporary off!"
 def test_dps() -> None:
     """test docker ps"""
     logger.debug(f"test of {dps.__doc__}")
-    print('--')
+    print('-----')
 
     with open("tests/dps_mock.txt") as fo:
         dps_mock = fo.read()
