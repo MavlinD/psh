@@ -9,7 +9,7 @@ from rich.highlighter import ReprHighlighter, _combine_regex as combine_regex
 from rich.theme import Theme
 from rich.table import Table
 from rich.console import Console
-from logrich.config import config
+from assets.config import config
 
 
 console = Console()

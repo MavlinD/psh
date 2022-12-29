@@ -5,10 +5,6 @@ import pytest
 from _pytest.main import Session
 from _pytest.nodes import Item
 
-# import loguru
-from loguru import logger
-# from logrich.logger_ import log  # noqa
-# from logrich.logger_assets import console as cl
 from rich.console import Console
 console = Console()
 

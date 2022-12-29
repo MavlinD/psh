@@ -29,3 +29,4 @@ COMMANDS-mongodb.md
 api/temp-request-for-verify.txt
 .env
 poetry-installer-*
+.mypy_cache

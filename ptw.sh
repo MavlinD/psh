@@ -7,7 +7,8 @@
 # echo $3
 
 if [[ $2 == 'mon' ]]; then
-  cmd="--picked --testmon --tb=short --no-header"
+  cmd="--tb=short --no-header"
+#   cmd="--picked --testmon --tb=short --no-header"
 else
   cmd="--tb=short --no-header"
 fi

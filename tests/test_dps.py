@@ -1,9 +1,6 @@
-# from logrich.logger_ import log
 from rich import print as rprint
 from rich.console import Console
 import sh
-# from sh import ifconfig
-# from sh import curl
 import pytest
 from loguru import logger
 
@@ -13,14 +10,14 @@ reason = "Temporary off!"
 
 
 @pytest.mark.skipif(skip, reason=reason)
-# @pytest.mark.parametrize("attr,resp_code,resp_len", [("id", 204, 0)])
-# @pytest.mark.asyncio
 def test_dps():
     # Use a breakpoint in the code line below to debug your script.
     # print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
     # sh.ls("-l", "/tmp", color="never")
     # uu = sh.ls("-al")
     logger.debug(222)
+    logger.debug(333)
+    # log.debug(222)
     uu = sh.bash("-c", "docker ps --format 'table {{.Names}}+{{.Status}}+{{.Networks}}+{{.Ports}}'")
     print(dir(uu))
     print()
