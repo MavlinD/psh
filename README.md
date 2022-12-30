@@ -11,3 +11,17 @@ pip3 rich sh
 ### Requirements
 
 see [tool.poetry.dependencies](pyproject.toml)
+
+
+### Tests
+
+```shell
+# create env
+poetry shell
+# setup deps
+poetry install
+# run tests
+pytest
+# run tests monitor
+ptw -- 5 mon
+```
