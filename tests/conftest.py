@@ -24,4 +24,4 @@ def pytest_sessionstart(session: Session) -> None:  # noqa
 
 def pytest_runtest_call(item: Item) -> None:
     """печатает заголовок теста"""
-    console.rule(f"[green]{item.parent.name}[/]::[yellow bold]{item.name}[/]")
+    console.rule(f"[green]{item.parent.name}[/]::[yellow bold]{item.name}[/]")  # type: ignore
