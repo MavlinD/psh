@@ -1,3 +1,4 @@
+import os
 import pathlib
 import re
 from typing import Union
@@ -71,10 +72,8 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
     def get_content(arg: list) -> str:
         """определяет содержимое колонки контент"""
         item = arg[7][:-1]
-        # item = arg[-1][:-1]
         # log.debug(arg)
         if arg[0][:1] == "d":
-            # dir = ' '.join(arg[7:][:-1])
             return f"[blue]{' '.join(arg[7:])[:-1]}/[/]"
         ext = pathlib.Path(item).suffix
         if ext == ".sh":
@@ -88,7 +87,50 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
     def get_time(arg: str) -> str:
         return f"[not b]{arg}[/]"
 
-    # return
+    def get_icon(arg: list) -> str:
+        """get icon from ext content"""
+        # name, ext = os.path.splitext(arg[7:][-1:][0])
+        # ext = pathlib.Path(arg[7:][-1:][0]).suffix
+        ext = arg[7:][-1:][0].split(".")[-1].strip().lower()
+        # log.debug(arg[7:][-1:][0])
+        # log.debug(ext)
+        # log.debug(ext == ".ini")
+        if ext == "ini":
+            return "[yellow][/]"
+        if ext == "md":
+            return "[yellow][/]"
+        if ext == "lock":
+            return "[yellow][/]"
+        if ext in [
+            "mp3",
+            "flack",
+        ]:
+            return "[yellow][/]"
+        if ext in [
+            "jpeg",
+            "bmp",
+            "ico",
+            "webp",
+        ]:
+            return "[yellow][/]"
+        if ext == "sh":
+            return "[green][/]"
+        if ext == "env":
+            return "[green][/]"
+        if ext == "txt":
+            return "[green][/]"
+        if ext == "vscode":
+            return "[green][/]"
+        if ext == "log":
+            return "[green][/]"
+        if ext == "js":
+            return "[green][/]"
+
+        if arg[0][:1] == "d":
+            return "[blue][/]"
+
+        return "[yellow][/]"
+
     for key, val in enumerate(dps_):
         cells = val.split(column_delimiter)
         # print(cells)
@@ -102,7 +144,7 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
                 cells[5],
                 get_time(cells[6]),
                 # *cells[:-1],
-                "icon",
+                get_icon(cells),
                 # cells[7],
                 get_content(cells),
                 style=(lambda key_: "on #18181C" if key_ % 2 else "on black")(key),
