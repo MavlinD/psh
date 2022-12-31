@@ -23,5 +23,5 @@ poetry install
 # run tests
 pytest
 # run tests monitor
-ptw -- 5 mon
+ptw 
 ```
