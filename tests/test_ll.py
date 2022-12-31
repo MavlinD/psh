@@ -14,8 +14,8 @@ reason = "Temporary off!"
 def test_ll() -> None:
     """test shell ls"""
     logger.debug(f"test of {ll.__doc__}")
-    print("")
-
+    print("-")
+    ll()
     return
     with open("tests/dps_mock.txt") as fo:
         dps_mock = fo.read()

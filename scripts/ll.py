@@ -6,6 +6,8 @@ from rich.table import Table
 from rich.style import Style
 import argparse
 
+from assets.logrich.logger_ import log
+
 
 def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: int = 2) -> Table:
     """shell ls"""
@@ -16,10 +18,11 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
     else:
         dps_ = sh.bash(
             "-c",
-            f"docker ps --format 'table {{{{.Names}}}}{column_delimiter}{{{{.Status}}}}{column_delimiter}{{{{.Networks}}}}{column_delimiter}{{{{.Ports}}}}'",
+            "ls -al",
         )
         dps_ = list(dps_)
-
+    log.debug(11)
+    return
     if sort == 1:
         # сортируем, сохраняем первую строку - заголовок
         first_row = dps_[:1]
