@@ -2,6 +2,7 @@ import pytest
 from loguru import logger
 from rich import print as rpr
 
+from scripts.ll import ll
 from scripts.docker_ps import dps
 
 skip = False
@@ -10,11 +11,12 @@ reason = "Temporary off!"
 
 
 @pytest.mark.skipif(skip, reason=reason)
-def test_dps() -> None:
-    """test docker ps"""
-    logger.debug(f"test of {dps.__doc__}")
+def test_ll() -> None:
+    """test shell ls"""
+    logger.debug(f"test of {ll.__doc__}")
     print("")
 
+    return
     with open("tests/dps_mock.txt") as fo:
         dps_mock = fo.read()
     # dps_mock = None
