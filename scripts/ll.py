@@ -1,6 +1,9 @@
+import locale
+from datetime import datetime
 import os
 import pathlib
 import re
+import time
 from typing import Union
 
 import sh
@@ -12,6 +15,9 @@ from rich.style import Style
 import argparse
 
 
+# locale.setlocale(locale.LC_ALL, "en_US")
+
+
 def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: int = 2) -> Table:
     """shell ls"""
 
@@ -19,8 +25,10 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
         # удаляем последний перенос
         dps_ = (dps_list.split("\n"))[:-1]
     else:
+        # locale.setlocale(locale.LC_ALL, "en_US")
         dps_ = sh.bash(
             "-c",
+            # f'ls -al --time-style="+%Y-%b-%d %H:%M" |  sed -r s"/\s+/{column_delimiter}/g"',
             f'ls -al --time-style=long-iso |  sed -r s"/\s+/{column_delimiter}/g"',
             # f'find . -maxdepth 1 -printf "%M{column_delimiter}%n{column_delimiter}%u{column_delimiter}%g{column_delimiter}%s{column_delimiter}%P\n"',
         )
@@ -38,7 +46,7 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
     table_header_style = Style(color="#3385BF", bold=False)
 
     table = Table(
-        highlight=True,
+        # highlight=True,
         header_style=table_header_style,
         padding=(0, 2),
         collapse_padding=True,
@@ -50,15 +58,22 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
     table.add_column("Chld", justify="left", style="green", max_width=27)
     table.add_column("User", justify="left", style="magenta", max_width=23)
     table.add_column("Group", justify="left", style="yellow")
-    table.add_column("Size", justify="left", style="green", max_width=27)
-    table.add_column("Date", justify="left", style="green", max_width=27)
+    table.add_column("Size", justify="right", style="green", max_width=27)
+    table.add_column("SizeD", justify="left", style="cyan")
     table.add_column("Time", justify="left", style="green", max_width=27)
-    table.add_column("Icons", justify="left", style="magenta", max_width=23)
-    table.add_column("Content", justify="left", style="yellow", no_wrap=False)
+    table.add_column("I", justify="left", style="magenta", max_width=23)
+    table.add_column("Content", justify="left", style="yellow")
 
-    def get_size(arg: str) -> str:
+    def get_size(arg: str) -> list:
         size = decimal(int(arg))
-        return str(size)
+        size_, dim = str(size).split(" ")
+        return [f"[b cyan]{size_}[/]", f"[cyan]{dim}[/]"]
+        # return f"[b cyan]{size_}[/] [cyan]{dim}[/]"
+
+    # def get_size_dimensions(arg: str) -> str:
+    #     size = decimal(int(arg))
+    #     size_, dim = str(size).split(" ")
+    #     return f"[b cyan]{size_}[/] [cyan]{dim}[/]"
 
     def get_perm(arg: str) -> str:
         arg_ = arg[1:]
@@ -84,8 +99,23 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
             return " ".join(arg[7:])[:-1]
         return item
 
-    def get_time(arg: str) -> str:
-        return f"[not b]{arg}[/]"
+    def get_time(date: str, time_: str, content: str) -> str:
+        # locale.setlocale(locale.LC_ALL, "ru_RU.UTF-8")
+        # locale.setlocale(locale.LC_ALL, "en_US")
+        format_ = "%Y-%m-%d %H:%M"
+        format_out = "%Y-%b-%d %H:%M"
+        datetime_created = datetime.strptime(f"{date} {time_}", format_)
+        # log.debug(f"{content}: {datetime.now() - time_obj_default}")
+        # m, s = divmod(difference.total_seconds(), 60)
+        diff_hours = (datetime.now() - datetime_created).total_seconds() / 3600
+        timestamp = datetime_created.strftime(format_out)
+        if diff_hours < 1:
+            return f"[not b #68FE00]{timestamp}[/]"
+        if diff_hours < 12:
+            return f"[not b #38FF86]{timestamp}[/]"
+        # log.debug()
+        # return f"[not b]{time_obj_default}[/]"
+        return f"[not b #65A57D]{timestamp}[/]"
 
     def get_icon(arg: list) -> str:
         """get icon from ext content"""
@@ -108,6 +138,7 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
             return "[yellow][/]"
         if ext in [
             "jpeg",
+            "jpg",
             "bmp",
             "ico",
             "webp",
@@ -126,6 +157,11 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
         if ext == "js":
             return "[green][/]"
 
+        if ext == "git":
+            return "[green][/]"
+        if ext == "bin":
+            return "[green][/]"
+
         if arg[0][:1] == "d":
             return "[blue][/]"
 
@@ -140,9 +176,9 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
                 cells[1],
                 cells[2],
                 cells[3],
-                get_size(cells[4]),
-                cells[5],
-                get_time(cells[6]),
+                *get_size(cells[4]),
+                # cells[5],
+                get_time(cells[5], cells[6], cells[7]),
                 # *cells[:-1],
                 get_icon(cells),
                 # cells[7],
