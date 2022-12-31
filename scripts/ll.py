@@ -60,28 +60,33 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
         return str(size)
 
     def get_perm(arg: str) -> str:
-        resp = re.sub("r", "[#27C864]r[/]", arg)
-        resp = re.sub("d", "[#27A1C8]d[/]", resp)
+        arg_ = arg[1:]
+        resp = re.sub("r", "[#27C864]r[/]", arg_)
+        # resp = re.sub("d", "[#27A1C8]d[/]", resp)
         resp = re.sub("x", "[#A6C827]x[/]", resp)
         resp = re.sub("w", "[#C87C27]w[/]", resp)
         resp = re.sub("-", "[#798721]-[/]", resp)
         return resp
 
-    def get_content(arg: str) -> str:
-        # resp = re.sub("r", "[#27C864]r[/]", arg)
-        # resp = re.sub("d", "[#27A1C8]d[/]", resp)
-        # resp = re.sub("x", "[#A6C827]x[/]", resp)
-        # resp = re.sub("w", "[#C87C27]w[/]", resp)
-        # resp = re.sub("-", "[#798721]-[/]", resp)
-        # log.debug(arg[0][:1])
-        item = arg[-1][:-1]
+    def get_content(arg: list) -> str:
+        """определяет содержимое колонки контент"""
+        item = arg[7][:-1]
+        # item = arg[-1][:-1]
+        # log.debug(arg)
         if arg[0][:1] == "d":
-            return f"[blue]{item}/[/]"
+            # dir = ' '.join(arg[7:][:-1])
+            return f"[blue]{' '.join(arg[7:])[:-1]}/[/]"
         ext = pathlib.Path(item).suffix
-        # log.debug()
         if ext == ".sh":
             return f"[b #14E864]{arg[-1][:-1]}[/]"
-        return arg[-1][:-1]
+        # если в имени ресурса есть пробелы
+        if len(arg) > 8:
+            # log.debug(arg)
+            return " ".join(arg[7:])[:-1]
+        return item
+
+    def get_time(arg: str) -> str:
+        return f"[not b]{arg}[/]"
 
     # return
     for key, val in enumerate(dps_):
@@ -95,16 +100,11 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
                 cells[3],
                 get_size(cells[4]),
                 cells[5],
-                cells[6],
+                get_time(cells[6]),
                 # *cells[:-1],
                 "icon",
                 # cells[7],
                 get_content(cells),
-                # cells[-1][:-1],
-                # сети слеплены без пробела
-                # ", ".join(cells[2].split(",")),
-                # последняя клетка может содержать или не содержать символ новой строки
-                # (lambda cell: cells[-1][:-1] if cells[-1][-1:] == "\n" else cells[-1])(cells),
                 style=(lambda key_: "on #18181C" if key_ % 2 else "on black")(key),
             )
     console = Console()
