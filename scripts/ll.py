@@ -1,3 +1,4 @@
+import pathlib
 import re
 from typing import Union
 
@@ -66,6 +67,22 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
         resp = re.sub("-", "[#798721]-[/]", resp)
         return resp
 
+    def get_content(arg: str) -> str:
+        # resp = re.sub("r", "[#27C864]r[/]", arg)
+        # resp = re.sub("d", "[#27A1C8]d[/]", resp)
+        # resp = re.sub("x", "[#A6C827]x[/]", resp)
+        # resp = re.sub("w", "[#C87C27]w[/]", resp)
+        # resp = re.sub("-", "[#798721]-[/]", resp)
+        # log.debug(arg[0][:1])
+        item = arg[-1][:-1]
+        if arg[0][:1] == "d":
+            return f"[blue]{item}/[/]"
+        ext = pathlib.Path(item).suffix
+        # log.debug()
+        if ext == ".sh":
+            return f"[b #14E864]{arg[-1][:-1]}[/]"
+        return arg[-1][:-1]
+
     # return
     for key, val in enumerate(dps_):
         cells = val.split(column_delimiter)
@@ -81,7 +98,9 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
                 cells[6],
                 # *cells[:-1],
                 "icon",
-                cells[-1][:-1],
+                # cells[7],
+                get_content(cells),
+                # cells[-1][:-1],
                 # сети слеплены без пробела
                 # ", ".join(cells[2].split(",")),
                 # последняя клетка может содержать или не содержать символ новой строки
