@@ -1,12 +1,11 @@
 from typing import Union
 
 import sh
+from logrich.logger_ import log
 from rich.console import Console
 from rich.table import Table
 from rich.style import Style
 import argparse
-
-from assets.logrich.logger_ import log
 
 
 def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: int = 2) -> Table:
