@@ -13,6 +13,6 @@ reason = "Temporary off!"
 def test_ll() -> None:
     """test shell ls"""
     log.debug(f"test of {ll.__doc__}")
-    print("")
+    print("-")
 
     subprocess.run(["python3", "scripts/ll.py", "-la"])

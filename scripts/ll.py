@@ -45,39 +45,41 @@ def ll(arg: str = "-al") -> Table:
     table.add_column("I", justify="left", style="magenta", max_width=23)
     table.add_column("Content", justify="left", style="yellow")
 
-    def get_size(arg: str) -> list:
+    def get_size(arg_: str) -> list:
         """вывод размеров контента"""
-        size = decimal(int(arg))
+        size = decimal(int(arg_))
         size_, dim = str(size).split(" ")
         return [f"[b cyan]{size_}[/]", f"[cyan]{dim}[/]"]
 
-    def get_perm(arg: str) -> str:
+    def get_perm(arg_: str) -> str:
         """формирует вывод разрешений"""
-        arg_ = arg[1:]
-        resp = re.sub("r", "[#27C864]r[/]", arg_)
+        # удаляем признак папки - d
+        arg__ = arg_[1:]
+        resp = re.sub("r", "[#27C864]r[/]", arg__)
         resp = re.sub("x", "[#A6C827]x[/]", resp)
         resp = re.sub("w", "[#C87C27]w[/]", resp)
         resp = re.sub("-", "[#798721]-[/]", resp)
         return resp
 
-    def get_content(arg: list) -> str:
+    def get_content(arg_: list) -> str:
         """определяет содержимое колонки контент"""
-        item = arg[7][:-1]
-        if arg[0][:1] == "d":
-            return f"[#00B1FE]{' '.join(arg[7:])[:-1]}/[/]"
+        item = arg_[7][:-1]
+        if arg_[0][:1] == "d":
+            return f"[#00B1FE]{' '.join(arg_[7:]).strip()}/[/]"
         ext = pathlib.Path(item).suffix
         if ext == ".sh":
-            return f"[b #14E864]{arg[-1][:-1]}[/]"
+            return f"[b #14E864]{arg_[-1].strip()}[/]"
         # если в имени ресурса есть пробелы
-        if len(arg) > 8:
-            # log.debug(arg)
-            return " ".join(arg[7:])[:-1]
+        if len(arg_) > 8:
+            # log.debug(arg_)
+            return " ".join(arg_[7:]).strip()
         return item
 
     def get_time(date: str, time_: str) -> str:
-        format_ = "%Y-%m-%d %H:%M:%S"
+        """формирует время"""
+        format_in = "%Y-%m-%d %H:%M:%S"
         format_out = "%Y-%b-%d %T"
-        datetime_created = datetime.strptime(f"{date} {time_}", format_)
+        datetime_created = datetime.strptime(f"{date} {time_}", format_in)
         diff_hours = (datetime.now() - datetime_created).total_seconds() / 3600
         timestamp = datetime_created.strftime(format_out)
         if diff_hours < 1:
@@ -86,9 +88,9 @@ def ll(arg: str = "-al") -> Table:
             return f"[not b #38FF86]{timestamp}[/]"
         return f"[not b #65A57D]{timestamp}[/]"
 
-    def get_icon(arg: list) -> str:
+    def get_icon(arg_: list) -> str:
         """get icon from ext content"""
-        ext = arg[7:][-1:][0].split(".")[-1].strip().lower()
+        ext = arg_[7:][-1:][0].split(".")[-1].strip().lower()
         if ext == "ini":
             return "[yellow][/]"
         if ext == "md":
@@ -125,7 +127,7 @@ def ll(arg: str = "-al") -> Table:
         if ext == "bin":
             return "[green][/]"
 
-        if arg[0][:1] == "d":
+        if arg_[0][:1] == "d":
             return "[blue][/]"
 
         return "[yellow][/]"
