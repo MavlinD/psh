@@ -1,61 +1,42 @@
-import locale
 from datetime import datetime
-import os
 import pathlib
 import re
-import time
-from typing import Union
 
+import click
 import sh
-from logrich.logger_ import log
+
+# from logrich.logger_ import log  # noqa
 from rich.console import Console
 from rich.filesize import decimal
 from rich.table import Table
 from rich.style import Style
-import argparse
 
 
-# locale.setlocale(locale.LC_ALL, "en_US")
-
-
-def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: int = 2) -> Table:
-    """shell ls"""
-
-    if type(dps_list) is str:
-        # удаляем последний перенос
-        dps_ = (dps_list.split("\n"))[:-1]
-    else:
-        # locale.setlocale(locale.LC_ALL, "en_US")
-        dps_ = sh.bash(
-            "-c",
-            # f'ls -al --time-style="+%Y-%b-%d %H:%M" |  sed -r s"/\s+/{column_delimiter}/g"',
-            f'ls -al --time-style=long-iso |  sed -r s"/\s+/{column_delimiter}/g"',
-            # f'find . -maxdepth 1 -printf "%M{column_delimiter}%n{column_delimiter}%u{column_delimiter}%g{column_delimiter}%s{column_delimiter}%P\n"',
-        )
-        # dps_ = list(dps_)
+@click.command(context_settings={"ignore_unknown_options": True})
+@click.argument("arg", default="-la")
+def ll(arg: str = "-al") -> Table:
+    """shell; ls - дополнительные аргументы ls"""
+    # log.debug(arg)
+    column_delimiter: str = "~~~"
+    dps_ = sh.bash(
+        "-c",
+        f'ls {arg} --time-style="+%Y-%m-%d %T" |  sed -r s"/\s+/{column_delimiter}/g"',
+    )
     # log.debug("", o=dps_)
-    if sort == 1:
-        # сортируем, сохраняем первую строку - заголовок
-        first_row = dps_[:1]
-        # сортируем по первой колонке
-        dps_2 = dps_[1:]
-        dps_2.sort()
-        # собираем снова список
-        dps_ = first_row + dps_2
 
     table_header_style = Style(color="#3385BF", bold=False)
 
     table = Table(
-        # highlight=True,
         header_style=table_header_style,
         padding=(0, 2),
         collapse_padding=True,
         show_edge=True,
         box=None,
+        show_header=False,
     )
 
     table.add_column("Perms", justify="left", style="cyan", max_width=20)
-    table.add_column("Chld", justify="left", style="green", max_width=27)
+    table.add_column("Chld", justify="right", style="green", max_width=27)
     table.add_column("User", justify="left", style="magenta", max_width=23)
     table.add_column("Group", justify="left", style="yellow")
     table.add_column("Size", justify="right", style="green", max_width=27)
@@ -65,20 +46,15 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
     table.add_column("Content", justify="left", style="yellow")
 
     def get_size(arg: str) -> list:
+        """вывод размеров контента"""
         size = decimal(int(arg))
         size_, dim = str(size).split(" ")
         return [f"[b cyan]{size_}[/]", f"[cyan]{dim}[/]"]
-        # return f"[b cyan]{size_}[/] [cyan]{dim}[/]"
-
-    # def get_size_dimensions(arg: str) -> str:
-    #     size = decimal(int(arg))
-    #     size_, dim = str(size).split(" ")
-    #     return f"[b cyan]{size_}[/] [cyan]{dim}[/]"
 
     def get_perm(arg: str) -> str:
+        """формирует вывод разрешений"""
         arg_ = arg[1:]
         resp = re.sub("r", "[#27C864]r[/]", arg_)
-        # resp = re.sub("d", "[#27A1C8]d[/]", resp)
         resp = re.sub("x", "[#A6C827]x[/]", resp)
         resp = re.sub("w", "[#C87C27]w[/]", resp)
         resp = re.sub("-", "[#798721]-[/]", resp)
@@ -87,9 +63,8 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
     def get_content(arg: list) -> str:
         """определяет содержимое колонки контент"""
         item = arg[7][:-1]
-        # log.debug(arg)
         if arg[0][:1] == "d":
-            return f"[blue]{' '.join(arg[7:])[:-1]}/[/]"
+            return f"[#00B1FE]{' '.join(arg[7:])[:-1]}/[/]"
         ext = pathlib.Path(item).suffix
         if ext == ".sh":
             return f"[b #14E864]{arg[-1][:-1]}[/]"
@@ -99,32 +74,21 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
             return " ".join(arg[7:])[:-1]
         return item
 
-    def get_time(date: str, time_: str, content: str) -> str:
-        # locale.setlocale(locale.LC_ALL, "ru_RU.UTF-8")
-        # locale.setlocale(locale.LC_ALL, "en_US")
-        format_ = "%Y-%m-%d %H:%M"
-        format_out = "%Y-%b-%d %H:%M"
+    def get_time(date: str, time_: str) -> str:
+        format_ = "%Y-%m-%d %H:%M:%S"
+        format_out = "%Y-%b-%d %T"
         datetime_created = datetime.strptime(f"{date} {time_}", format_)
-        # log.debug(f"{content}: {datetime.now() - time_obj_default}")
-        # m, s = divmod(difference.total_seconds(), 60)
         diff_hours = (datetime.now() - datetime_created).total_seconds() / 3600
         timestamp = datetime_created.strftime(format_out)
         if diff_hours < 1:
             return f"[not b #68FE00]{timestamp}[/]"
         if diff_hours < 12:
             return f"[not b #38FF86]{timestamp}[/]"
-        # log.debug()
-        # return f"[not b]{time_obj_default}[/]"
         return f"[not b #65A57D]{timestamp}[/]"
 
     def get_icon(arg: list) -> str:
         """get icon from ext content"""
-        # name, ext = os.path.splitext(arg[7:][-1:][0])
-        # ext = pathlib.Path(arg[7:][-1:][0]).suffix
         ext = arg[7:][-1:][0].split(".")[-1].strip().lower()
-        # log.debug(arg[7:][-1:][0])
-        # log.debug(ext)
-        # log.debug(ext == ".ini")
         if ext == "ini":
             return "[yellow][/]"
         if ext == "md":
@@ -156,7 +120,6 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
             return "[green][/]"
         if ext == "js":
             return "[green][/]"
-
         if ext == "git":
             return "[green][/]"
         if ext == "bin":
@@ -177,11 +140,8 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
                 cells[2],
                 cells[3],
                 *get_size(cells[4]),
-                # cells[5],
-                get_time(cells[5], cells[6], cells[7]),
-                # *cells[:-1],
+                get_time(cells[5], cells[6]),
                 get_icon(cells),
-                # cells[7],
                 get_content(cells),
                 style=(lambda key_: "on #18181C" if key_ % 2 else "on black")(key),
             )
@@ -191,8 +151,4 @@ def ll(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: i
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-s", "--sort", default=1, type=int, help="номер колонки для сортировки")
-    args = parser.parse_args()
-
-    ll(sort=args.sort)
+    ll()
