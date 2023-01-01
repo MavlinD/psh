@@ -13,14 +13,16 @@ from rich.style import Style
 
 
 @click.command(context_settings={"ignore_unknown_options": True})
+@click.argument("path", default=".")
 @click.argument("arg", default="-la")
-def ll(arg: str = "-al") -> Table:
+def ll(path: str = ".", arg: str = "-al") -> Table:
     """shell; ls - дополнительные аргументы ls"""
+    # log.trace(path)
     # log.debug(arg)
     column_delimiter: str = "~~~"
     dps_ = sh.bash(
         "-c",
-        f'ls {arg} --time-style="+%Y-%m-%d %T" |  sed -r s"/\s+/{column_delimiter}/g"',
+        f'ls {path} {arg} --time-style="+%Y-%m-%d %T" |  sed -r s"/\s+/{column_delimiter}/g"',
     )
     # log.debug("", o=dps_)
 
@@ -93,6 +95,18 @@ def ll(arg: str = "-al") -> Table:
         ext = arg_[7:][-1:][0].split(".")[-1].strip().lower()
         if ext == "ini":
             return "[yellow][/]"
+        if ext == "pdf":
+            return "[yellow][/]"
+        if ext == "db":
+            return "[yellow][/]"
+        if ext == "mp4":
+            return "[yellow][/]"
+        if ext == "xml":
+            return "[yellow][/]"
+        if ext == "html":
+            return "[yellow][/]"
+        if ext == "apk":
+            return "[yellow][/]"
         if ext == "md":
             return "[yellow][/]"
         if ext == "lock":
@@ -106,12 +120,37 @@ def ll(arg: str = "-al") -> Table:
             "jpeg",
             "jpg",
             "bmp",
+            "png",
             "ico",
             "webp",
+            "gif",
         ]:
             return "[yellow][/]"
-        if ext == "sh":
+        if ext in [
+            "xls",
+            "xlsx",
+            "csv",
+        ]:
+            return "[yellow][/]"
+        if ext in [
+            "doc",
+            "docx",
+        ]:
+            return "[yellow][/]"
+        if ext in [
+            "gz",
+            "zip",
+            "rar",
+        ]:
+            return "[yellow][/]"
+        if ext in [
+            "sh",
+        ]:
             return "[green][/]"
+        if ext in ["appimage"]:
+            return "[b green][/]"
+        if ext == "json":
+            return "[yellow][/]"
         if ext == "env":
             return "[green][/]"
         if ext == "txt":
