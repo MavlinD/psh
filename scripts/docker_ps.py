@@ -1,6 +1,7 @@
 from typing import Union
 
 import sh
+from rich import print as pr
 from rich.console import Console
 from rich.table import Table
 from rich.style import Style
@@ -45,6 +46,7 @@ def dps(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: 
     table.add_column("Networks", justify="left", style="magenta", max_width=23)
     table.add_column("Ports", justify="left", style="yellow")
 
+    rows=0
     for key, val in enumerate(dps_):
         cells = val.split(column_delimiter)
         if key != 0:
@@ -57,9 +59,20 @@ def dps(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: 
                 (lambda cell: cells[-1][:-1] if cells[-1][-1:] == "\n" else cells[-1])(cells),
                 style=(lambda key_: "on #18181C" if key_ % 2 else "on black")(key),
             )
-    console = Console()
-    console.print(table)
-    return table
+        rows=key
+
+    def print_ps(table: Table, rows: int) -> Table:
+        """принтит как пейджер, если высота консоли меньше кол-ва строк в выводе"""
+        console = Console(force_terminal=True)
+        if rows > console.size.height:
+            with console.pager(styles=True):
+                console.print(table)
+        else:
+            pr(table)
+        # pr(console.size.height)
+        return table
+
+    return print_ps(table=table, rows=rows)
 
 
 if __name__ == "__main__":
