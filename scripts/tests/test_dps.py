@@ -15,7 +15,7 @@ def test_dps() -> None:
     logger.debug(f"test of {dps.__doc__}")
     print("")
 
-    with open("tests/dps_mock.txt") as fo:
+    with open("scripts/tests/dps_mock.txt") as fo:
         dps_mock = fo.read()
     # dps_mock = None
 

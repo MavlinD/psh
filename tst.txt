@@ -1,0 +1,34 @@
+  rwxrwxr-x   9  mdv  mdv   4.1  kB     2023-Jan-03 18:10:44    ./                                                             
+  rwxrwxr-x  99  mdv  mdv   4.1  kB     2023-Jan-03 16:38:05    ../                                                            
+  rwxr--r--   1  mdv  mdv   642  bytes  2022-Dec-31 18:27:38    disc.sh                                                        
+  rw-rw-r--   1  mdv  mdv   3.9  kB     2022-Dec-29 13:12:09    .env                                                           
+  rwxrwxr-x   8  mdv  mdv   4.1  kB     2023-Jan-03 18:00:13    .git/                                                          
+  rw-rw-r--   1  mdv  mdv   539  bytes  2022-Dec-31 22:09:01    .gitignore                                                     
+  rwxrwxr-x   3  mdv  mdv   4.1  kB     2022-Dec-29 13:12:36    .idea/                                                         
+  rwxrwxr-x   4  mdv  mdv   4.1  kB     2022-Dec-30 22:02:21    .mypy_cache/                                                   
+  rw-rw-r--   1  mdv  mdv   220  bytes  2022-Dec-29 13:45:36    mypy.ini                                                       
+  rw-rw-r--   1  mdv  mdv    90  bytes  2023-Jan-03 15:38:40    off-pyrightconfig.json                                         
+  rw-rw-r--   1  mdv  mdv   2.3  MB     2022-Dec-31 16:24:54    out.ps                                                         
+  rw-rw-r--   1  mdv  mdv  65.2  kB     2023-Jan-02 13:31:50    poetry.lock                                                    
+  rwxrwxr-x   2  mdv  mdv   4.1  kB     2023-Jan-02 19:16:02    __pycache__/                                                   
+  rw-rw-r--   1  mdv  mdv   1.4  kB     2023-Jan-03 15:46:18    pyproject.toml                                                 
+  rw-rw-r--   1  mdv  mdv    88  bytes  2023-Jan-03 15:48:37    pyrightconfig.json                                             
+  rwxrwxr-x   3  mdv  mdv   4.1  kB     2022-Dec-29 11:14:39    .pytest_cache/                                                 
+  rw-r--r--   1  mdv  mdv   556  bytes  2023-Jan-01 18:04:53    README.md                                                      
+  rwxr--r--   1  mdv  mdv   1.7  kB     2022-Dec-31 18:27:38    sber-conn.sh                                                   
+  rwxrwxr-x   6  mdv  mdv   4.1  kB     2023-Jan-03 16:37:05    scripts/                                                       
+  rw-rw-r--   1  mdv  mdv     0  bytes  2022-Dec-31 23:13:01    test-222.jpg                                                   
+  rw-rw-r--   1  mdv  mdv     0  bytes  2023-Jan-01 21:38:13    test-333.js                                                    
+  rw-rw-r--   1  mdv  mdv     0  bytes  2023-Jan-01 21:42:05    test 555.pdf                                                   
+  rw-rw-r--   1  mdv  mdv     0  bytes  2023-Jan-01 21:52:55    test 777.json                                                  
+  rw-rw-r--   1  mdv  mdv     0  bytes  2022-Dec-31 21:12:18    test.env                                                       
+  rw-rw-r--   1  mdv  mdv     0  bytes  2022-Dec-31 21:24:07    test.jpg                                                       
+  rw-rw-r--   1  mdv  mdv     0  bytes  2022-Dec-31 21:08:53    test.log                                                       
+  rwxrwxr-x   2  mdv  mdv   4.1  kB     2022-Dec-31 20:03:18    test test foo bar/                                             
+  rw-rw-r--   1  mdv  mdv     0  bytes  2022-Dec-31 21:08:29    test.vscode                                                    
+  rw-rw-r--   1  mdv  mdv   547  bytes  2023-Jan-02 19:27:35    tox.ini                                                        
+  rw-rw-r--   1  mdv  mdv     0  bytes  2023-Jan-03 18:10:44    tst.txt                                                        
+  rwxr-xr-x   1  mdv  mdv   133  bytes  2022-Dec-31 18:27:38    vpn_connect.sh                                                 
+  rw-rw-r--   1  mdv  mdv   1.6  MB     2022-Dec-31 16:24:54    Бутусов - Большая Российская Музыкальная Энциклопедия - В      
+                                                                 генеральный час уборки.mp3                                     
+  rw-r--r--   1  mdv  mdv     4  bytes  2022-Dec-31 20:10:33    фоо.txt                                                        

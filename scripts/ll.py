@@ -3,13 +3,13 @@ import re
 
 import click
 import sh
+from rich.console import Console
 
 # from logrich.logger_ import log  # noqa
-from rich.console import Console
 
 from rich.filesize import decimal
 from rich.table import Table
-from rich.style import Style
+from rich import print as pr
 
 # from assets.tools import timer
 
@@ -29,10 +29,7 @@ def ll(path: str = ".", arg: str = "-al") -> Table:
     )
     # log.debug("", o=dps_)
 
-    table_header_style = Style(color="#3385BF", bold=False)
-
     table = Table(
-        header_style=table_header_style,
         padding=(0, 2),
         collapse_padding=True,
         show_edge=True,
@@ -51,11 +48,29 @@ def ll(path: str = ".", arg: str = "-al") -> Table:
     table.add_column("Content", justify="left", style="yellow")
 
     # @timer
+    def print_ls(table: Table, rows: int) -> Table:
+        """принтит как пейджер, если высота консоли меньше кол-ва строк в выводе"""
+        console = Console(force_terminal=True)
+        if rows > console.size.height:
+            with console.pager(styles=True):
+                console.print(table)
+        else:
+            pr(table)
+        # pr(console.size.height)
+        return table
+
+    # @timer
     def get_size(arg_: str) -> tuple:
         """вывод размеров контента"""
         size = decimal(int(arg_))
         size_, dim = str(size).split(" ")
-        return f"[b cyan]{size_}[/]", f"[cyan]{dim}[/]"
+        if dim =='bytes':
+            dim_=f"[dim cyan]B[/]"
+        elif dim == 'kB':
+            dim_=f"[#A0D3D3]{dim}[/]"
+        else:
+            dim_=f"[#11EBEB]{dim}[/]"
+        return f"[#9A4CF5]{size_}[/]", dim_
 
     # @timer
     def get_perm(arg_: str) -> str:
@@ -63,8 +78,8 @@ def ll(path: str = ".", arg: str = "-al") -> Table:
         # удаляем признак папки - d
         arg__ = arg_[1:]
         resp = re.sub("r", "[#27C864]r[/]", arg__)
-        resp = re.sub("x", "[#DB00FE]x[/]", resp)
-        resp = re.sub("w", "[#C87C27]w[/]", resp)
+        resp = re.sub("x", "[#E13200]x[/]", resp)
+        resp = re.sub("w", "[#BAE100]w[/]", resp)
         resp = re.sub("-", "[#798721]-[/]", resp)
         return resp
 
@@ -177,6 +192,7 @@ def ll(path: str = ".", arg: str = "-al") -> Table:
 
         return "[yellow][/]", f"[yellow]{content}[/]"
 
+    rows=0
     for key, val in enumerate(dps_):
         cells = val.split(column_delimiter)
         # print(cells)
@@ -192,9 +208,8 @@ def ll(path: str = ".", arg: str = "-al") -> Table:
                 *get_icon(cells),  # 0.6 sec
                 style=(lambda key_: "on #18181C" if key_ % 2 else "on black")(key),
             )
-    console = Console()
-    console.print(table)
-    return table
+        rows=key
+    return print_ls(table=table, rows=rows)
 
 
 if __name__ == "__main__":
