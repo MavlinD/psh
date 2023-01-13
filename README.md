@@ -8,7 +8,7 @@ python3 scripts/docker_ps.py 1
 # sort by second column
 python3 scripts/docker_ps.py 2
 # shell ls
-python3 scripts/ll.py <arg>
+python3 scripts/ll.py --help
 ```
 
 ```shell

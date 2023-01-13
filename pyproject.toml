@@ -21,6 +21,7 @@ pytest-picked = "^0.4.6"
 pydantic = {extras = ["dotenv"], version = "^1.10.4"}
 logrich = "^0.6.0"
 py-heat = "^0.0.6"
+pynvim = "^0.4.3"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -46,7 +46,7 @@ def dps(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: 
     table.add_column("Networks", justify="left", style="magenta", max_width=23)
     table.add_column("Ports", justify="left", style="yellow")
 
-    rows=0
+    rows = 0
     for key, val in enumerate(dps_):
         cells = val.split(column_delimiter)
         if key != 0:
@@ -59,7 +59,7 @@ def dps(dps_list: Union[None, str] = None, column_delimiter: str = "~~~", sort: 
                 (lambda cell: cells[-1][:-1] if cells[-1][-1:] == "\n" else cells[-1])(cells),
                 style=(lambda key_: "on #18181C" if key_ % 2 else "on black")(key),
             )
-        rows=key
+        rows = key
 
     def print_ps(table: Table, rows: int) -> Table:
         """принтит как пейджер, если высота консоли меньше кол-ва строк в выводе"""

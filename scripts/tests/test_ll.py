@@ -21,4 +21,11 @@ def test_ll() -> None:
     print("-")
     # log.debug('', o=sys.path)
 
-    subprocess.run(["python3", "scripts/ll.py", "-la"])
+    subprocess.run(["python3", "scripts/ll.py", ".", "-l", "--sv=1"])
+    # subprocess.run(["python3", "scripts/ll.py", ".", "-la", "--sv=1"])
+    # subprocess.run(["python3", "scripts/ll.py"])
+    # subprocess.run(["python3", "scripts/ll.py", ".."])
+    # subprocess.run(["python3", "scripts/ll.py", ".", "-la"])
+    # r = subprocess.run(["python3", "scripts/ll.py", ".", "-l"])
+    # pr(r)
+    # subprocess.run(["python3", "scripts/ll.py", "..", "-la"])

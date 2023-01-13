@@ -5,27 +5,33 @@ import click
 import sh
 from rich.console import Console
 
-# from logrich.logger_ import log  # noqa
+# from assets.tools import timer
 
 from rich.filesize import decimal
 from rich.table import Table
 from rich import print as pr
 
-# from assets.tools import timer
-
 
 @click.command(context_settings={"ignore_unknown_options": True})
 @click.argument("path", default=".")
 @click.argument("arg", default="-la")
+@click.option("--sv", is_flag=False, default=False, help="использовать пейджер")
 # @timer
-def ll(path: str = ".", arg: str = "-al") -> Table:
-    """shell; ls - дополнительные аргументы ls"""
-    # log.trace(path)
-    # log.debug(arg)
+def ll(path: str = ".", arg: str = "-al", sv: bool = False) -> Table:
+    """
+    \b
+    пример вызова:
+    ll . -la
+    ll . -la
+    ll . -la --sv=1
+    """
+    # pr(path)
+    # pr(arg)
+    # pr(sv)
     column_delimiter: str = "~~~"
     dps_ = sh.bash(
         "-c",
-        f'ls {path} {arg} --time-style="+%Y-%m-%d %T" |  sed -r s"/\s+/{column_delimiter}/g"',
+        f'ls {arg} {path} --time-style="+%Y-%m-%d %T" |  sed -r s"/\s+/{column_delimiter}/g"',
     )
     # log.debug("", o=dps_)
 
@@ -48,10 +54,10 @@ def ll(path: str = ".", arg: str = "-al") -> Table:
     table.add_column("Content", justify="left", style="yellow")
 
     # @timer
-    def print_ls(table: Table, rows: int) -> Table:
+    def print_ls(table: Table, rows: int, pager: bool = False) -> Table:
         """принтит как пейджер, если высота консоли меньше кол-ва строк в выводе"""
         console = Console(force_terminal=True)
-        if rows > console.size.height:
+        if pager and (rows > console.size.height):
             with console.pager(styles=True):
                 console.print(table)
         else:
@@ -62,14 +68,15 @@ def ll(path: str = ".", arg: str = "-al") -> Table:
     # @timer
     def get_size(arg_: str) -> tuple:
         """вывод размеров контента"""
+        # pr(arg_)
         size = decimal(int(arg_))
         size_, dim = str(size).split(" ")
-        if dim =='bytes':
-            dim_=f"[dim cyan]B[/]"
-        elif dim == 'kB':
-            dim_=f"[#A0D3D3]{dim}[/]"
+        if dim == "bytes":
+            dim_ = f"[dim cyan]B[/]"
+        elif dim == "kB":
+            dim_ = f"[#A0D3D3]{dim}[/]"
         else:
-            dim_=f"[#11EBEB]{dim}[/]"
+            dim_ = f"[#11EBEB]{dim}[/]"
         return f"[#9A4CF5]{size_}[/]", dim_
 
     # @timer
@@ -148,8 +155,14 @@ def ll(path: str = ".", arg: str = "-al") -> Table:
         ]:
             return "[yellow][/]", f"[#BF1FD8]{content}[/]"
         if ext in [
+            "yml",
+            "yaml",
+        ]:
+            return "[yellow][/]", f"[#ff996]{content}[/]"
+        if ext in [
             "xls",
             "xlsx",
+            "xlsm",
             "csv",
         ]:
             return "[yellow][/]", f"[#14E864]{content}[/]"
@@ -192,7 +205,7 @@ def ll(path: str = ".", arg: str = "-al") -> Table:
 
         return "[yellow][/]", f"[yellow]{content}[/]"
 
-    rows=0
+    rows = 0
     for key, val in enumerate(dps_):
         cells = val.split(column_delimiter)
         # print(cells)
@@ -206,10 +219,10 @@ def ll(path: str = ".", arg: str = "-al") -> Table:
                 *get_size(cells[4]),  # 0.7 sec
                 get_time(cells[5], cells[6]),  # 0.8 sec
                 *get_icon(cells),  # 0.6 sec
-                style=(lambda key_: "on #18181C" if key_ % 2 else "on black")(key),
+                style=(lambda key_: "on #18181C" if key_ % 2 else None)(key),
             )
-        rows=key
-    return print_ls(table=table, rows=rows)
+        rows = key
+    return print_ls(table=table, rows=rows, pager=sv)
 
 
 if __name__ == "__main__":
