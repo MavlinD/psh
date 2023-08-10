@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">-->
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>-->
+<link rel="stylesheet" href="css/main.css">
+<!--<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>-->
+<head>
+    <meta charset="UTF-8">
+    <title>Datetime</title>
+</head>
+<body class="container-fluid my-theme">
+<main class="justify-content-center my-theme row">
+    <div class="col-xxl-6 jumbotron mt-2 rounded-1 text-justify lh-3">
+
+        <h1 class="text-decoration-none mt-1">Аспекты работы с таймзонами<br>на проекте ГГОК</h1>
+
+        <p class="text-indent-3 mt-4">Часовые пояса относительно нулевого меридиана выражаются как положительное (к
+            востоку) и отрицательное (к западу)
+            смещение от UTC (Опорный меридиан).
+            Стандарт SQL требует, чтобы тип timestamp подразумевал <strong>timestamp without time zone</strong> (время
+            без часового пояса), и
+            например, PostgreSQL следует этому. Хотя и располагает расширением, для особых случаев, для хранения
+            timestamp with
+            time zone.</p>
+        <p class="text-indent-2 mt-4">
+            Почему особых? Потому что общепринятой практикой считается хранение даты-времени в БД с нулевым смещением,
+            те по
+            UTC.
+            Подразумевается, например, что значение <code> 2023-07-11 05:07:03 равно 2023-07-11 05:07:03+00:00 и
+            2023-07-11
+            05:07:03Z.</code></p>
+
+        <p class="text-indent-3 mt-4">Сейчас у нас есть следующие кейсы исп-я полей типа datetime:
+        </p>
+        <ol>
+            <li>Выборка и передача клиенту</li>
+            <li>Выборка в субзапросе с последующим исп-ем в качестве параметров для запросов</li>
+            <li>Запись в БД</li>
+            <li>Datetime получен от клиента и должен быть исп-ван как параметры выборки - например как границы
+                диапазонов.
+            </li>
+        </ol>
+        <h5>Общее замечание</h5>
+        <p class="text-indent-3 mt-4">Апи может управлять временем и таймзоной (ТЗ) как независимо друг от друга, так и
+            в связи.
+            То есть может менять ТЗ не меняя собственно время, может менять время и устанавливать для него требуемую ТЗ,
+            может корректировать весь объект меняя и ТЗ и время.
+            При этом в работе с datetime через алхимию нужно учитывать то как <strong>ORM</strong> транслирует такие
+            данные в запросы к
+            БД.</p>
+
+        <h6 class="text-indent-1 mt-4">Дано:</h6>
+        <ul>
+            <li>данные полей datetime записаны в БД по Уральскому времени (+5:00 UTC) без указания ТЗ</li>
+            <li>ORM транслирует в запросы переданное время с поправкой на ТЗ, те например <code>2023-07-11
+                05:07:03+03:00 станет 2023-07-11 02:07:03, а 2023-07-11 05:07:03-03:00 станет 2023-07-11 08:07:03</code>
+            </li>
+            <li>Текущая ТЗ АПИ: UTC</li>
+            <li>ТЗ отдаваемых ORM полей datetime - Уральское время (+5:00 UTC)</li>
+            <li>время отдаваемое ORM не меняется, те как в БД записано, так в ответе на запрос и будет получено, но будет добавлена ТЗ UTC+5</li>
+        </ul>
+
+        <p class="text-indent-2 mt-4">
+            <i>Итак первый случай:</i>
+            здесь просто, делаем запрос и отдаём клиенту, время как есть, ТЗ из настроек АПИ корректна</p>
+        <p class="text-indent-2 mt-4">
+            <i>Второй:</i>
+            здесь время будет получено с ТЗ и чтобы оно попало в запрос как есть, нужно заменить ТЗ на нулевую.
+            Примерно так:
+        </p>
+        <pre class="codeBlock">
+        dt.replace(tzinfo=timezone(offset=timedelta(hours=0))</pre>
+        <p class="text-indent-2 mt-4">
+            <i>Третий:</i>
+            Здесь уже сложнее, вначале создадим ТЗ со сдвигом равным Уральскому времени (+5), затем получим текущее
+            время
+            АПИ, но с параметром ввиде только что созданной ТЗ, но это еще не всё, поскольку полученная ТЗ равна +5:00,
+            а
+            ORM изменит время на эту величину, нужно заменить ТЗ у полученного объекта в ноль.
+
+            Примерно так:
+        </p>
+        <pre class="codeBlock">
+        tz = timezone(offset=timedelta(hours=5))
+        dt = datetime.now(tz=tz).replace(tzinfo=timezone.utc)</pre>
+        <p class="text-indent-2 mt-4">
+            <i>Четверый:</i>
+            Клиент если это браузер, мобильное устройство или любое другое со
+            своей собственной ТЗ передаст datetime со своей ТЗ по стандарту <strong>ISO-8601</strong>.
+            Чтобы корректно сравнивать такое время со временем в БД или АПИ мы должны
+            привести его к общей ТЗ и здесь два субкейса:
+        </p>
+        <ul>
+            <li>Сравниваем полученное время со временем в БД (Уральское время)</li>
+            <li>Сравниваем полученное время со временем в АПИ (по UTC)</li>
+        </ul>
+        <p class="text-indent-2 mt-4">
+            В первом случае меняем как время, так и ТЗ, примерно так:
+        </p>
+        <pre class="codeBlock">
+        tz = timezone(offset=timedelta(hours=5))
+        dt.astimezone(tz=tz)</pre>
+        <p class="text-indent-2 mt-4">
+            Во втором случае меняем ТЗ, примерно так:
+        </p>
+        <pre class="codeBlock">
+        tz = timezone(offset=timedelta(hours=5))
+        dt.replace(tzinfo=tz)</pre>
+        <p class="text-indent-1"><u>И это еще на данный момент у нас нет перехода на летнее время.</u></p>
+
+        <p class="text-indent-3 mt-4">В нашей текущей ситуацией с датой-временем нужно писать сильно больше кода, как
+            основного, так
+            и для тестов. <i>Больше кода, больше ошибок, качество ниже, выше трудоемкость, а продукт
+                дороже.</i></p>
+
+        <p class="text-indent-3 mt-4">Предлагаю уравнять ТЗ для данных в БД с ТЗ АПИ, для
+            обеих установив её значение в 0, те по UTC, это заметно облегчит задачу.</p>
+        <p class="text-indent-3">Для этого нужно чтобы ETL решения были адаптированы для доставки
+            <strong>datetime</strong> данных по UTC.</p>
+    </div>
+
+</main>
+
+</body>
+</html>
